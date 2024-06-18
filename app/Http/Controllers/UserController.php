@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreUserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -21,8 +22,8 @@ class UserController extends Controller
         return Inertia::render('User/Create');
     }
 
-    public function store(Request $request){
-
+    public function store(StoreUserRequest $request)
+    {
         User::create([
             'name' => $request->name,
             'email' => $request->email,
