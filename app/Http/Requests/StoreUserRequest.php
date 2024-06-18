@@ -25,6 +25,7 @@ class StoreUserRequest extends FormRequest
         return [
             'name' => ['min:3', 'max:25'],
             'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
+            'password' => ['required','confirmed']
         ];
     }
 
@@ -38,6 +39,8 @@ class StoreUserRequest extends FormRequest
             'email.email' => 'Email invalido',
             'email.max' => 'O email deve conter menos de 255 caracteres',
             'email.unique' => 'Este email já esta em uso!',
+            'password.required' => 'A senha é obrigatória',
+            'password.confirmed' => 'Os campos de senha são divergentes'
         ];
     }
 }

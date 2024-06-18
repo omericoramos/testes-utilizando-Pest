@@ -123,5 +123,26 @@ it('validar os dados do emial', function () {
 });
 
 it('o password não pode ser vazio', function () {
-    //expect()->
-})->todo();
+
+    $user = User::factory()->create();
+    actingAs($user);
+
+    // dados do novo usuário para cadstrar
+    $userData = [
+        'name' => 'Omerico Araújo',
+        'email' => 'omerico@gmail.com',
+        'password' => 'password',
+        'password_confirmation' => 'pass'
+    ];
+
+    // validando o password vazio e também password diferente de password_confirmation
+    post(route('users.store', $userData))->assertSessionHasErrors([
+        'password' => 'A senha é obrigatória',
+        'password' => 'Os campos de senha são divergentes'
+    ]);
+
+    // atualizando o campo password_confirmation
+    $userData['password_confirmation'] = 'password';
+    // cadastrando novo usuário
+    post(route('users.store', $userData))->assertSuccessful();
+});
