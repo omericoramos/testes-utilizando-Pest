@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreUserRequest extends FormRequest
@@ -22,15 +23,21 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['min:3','max:25']
+            'name' => ['min:3', 'max:25'],
+            'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
         ];
     }
 
     public function messages()
     {
-       return [
+        return [
             'name.min' => 'O nome do usuário deve conter no minimo 3 caracteres!',
-            'name.max' => 'O nome do usuário deve conter no maximo 25 caracteres!'
+            'name.max' => 'O nome do usuário deve conter no maximo 25 caracteres!',
+            'email.required' => 'O email é obrigatório',
+            'email.lowercase' => 'O email deve conter apenas letras minusculas!',
+            'email.email' => 'Email invalido',
+            'email.max' => 'O email deve conter menos de 255 caracteres',
+            'email.unique' => 'Este email já esta em uso!',
         ];
     }
 }

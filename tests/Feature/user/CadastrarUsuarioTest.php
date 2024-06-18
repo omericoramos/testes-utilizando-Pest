@@ -27,7 +27,7 @@ it('deve cadastrar um usuário com sucesso', function () {
 
     post(route('users.store'), [
         'name' => fake()->name(),
-        'email' => 'omericoramos@hotmail.com',
+        'email' => fake()->email(),
         'password' => 'password',
         'password_confirmation' => 'password'
     ])->assertSuccessful();
@@ -67,13 +67,60 @@ it('o nome do usuário deve ter mais de 2 caracteres e menos de 25', function ()
     );
 });
 
-it('o usuário devera estar logado para cadastrar um novo usuário', function () {
-    //expect()->
-})->todo();
+it('validar os dados do emial', function () {
 
-it('o email deverá ser unico', function () {
-    //expect()->
-})->todo();
+    $user = User::factory()->create();
+    actingAs($user);
+
+    // dados do novo usuário para cadstrar
+    $userData = [
+        'name' => 'Omerico Araújo',
+        'email' => 'omerico@gmail.com',
+        'password' => 'password',
+        'password_confirmation' => 'password'
+    ];
+
+    // cadastrando usuário com sucesso
+    post(route('users.store'), $userData)->assertSuccessful();
+
+
+    $userData['email'] = 'Omerico@gmail.com';
+    // validando email duplicado e com letra maiuscula 
+    post(route('users.store'), $userData)->assertSessionHasErrors(
+        [
+            'email' => 'Este email já esta em uso!',
+            'email' => 'O email deve conter apenas letras minusculas!'
+        ]
+    );
+
+
+    $userData['email'] = null;
+    // validando email vazio
+    post(route('users.store'), $userData)->assertSessionHasErrors(
+        [
+            'email' => 'O email é obrigatório'
+        ]
+    );
+
+    $userData['email'] = 'omericogmail.com';
+    // validando email sem o @ e email vazio
+    post(route('users.store'), $userData)->assertSessionHasErrors(
+        [
+            'email' => 'O email é obrigatório',
+            'email' => 'Email invalido',
+            // 'email' => 'O email deve conter menos de 255 caracteres',
+        ]
+    );
+
+    $userData['email'] = str_repeat('w',256).'@gmail.com';
+    // validando email com mais de 255 caracteres
+    post(route('users.store'), $userData)->assertSessionHasErrors(
+        [
+            'email' => 'O email deve conter menos de 255 caracteres',
+        ]
+    );
+
+});
 
 it('o password não pode ser vazio', function () {
     //expect()->
